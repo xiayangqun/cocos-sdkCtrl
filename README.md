@@ -44,7 +44,7 @@
 (重要的事情说三遍)
 
 ## 3. 使用（这里以**百度的单机SDK**举例）
-### 假设我们的Activity类名字叫 **TestActivity**,首先这个**TestActivity**需要继承自**Cococs2dxActivity**并显示**SDKCtrlDelegate**的方法
+### 假设我们的Activity类名字叫 **TestActivity**,首先这个**TestActivity**需要继承自**Cococs2dxActivity**并实现**SDKCtrlDelegate**的方法
 
 ```java
 public class TestActivity extends Cocos2dxActivity implements SDKCtrlDelegate{
@@ -62,7 +62,7 @@ public class TestActivity extends Cocos2dxActivity implements SDKCtrlDelegate{
 
 ### 第二步在**onCreate**函数里初始化我们的**SDKCtrl**和需要使用到的**渠道SDK**
 
-```
+```java
  protected void onCreate(Bundle savedInstanceState){
 			super.onCreate(savedInstanceState);
 			SDKCtrl.init(this, this, "Baidu");
@@ -72,7 +72,7 @@ public class TestActivity extends Cocos2dxActivity implements SDKCtrlDelegate{
 
 ### getSDKConfig函数如下
 
-```
+```java
   public static SDKConfig getSDKConfig(String sdkName)
 	    {
 	    	HashMap<String, String> specialConfigMap = new HashMap<String, String>();
@@ -101,7 +101,7 @@ public class TestActivity extends Cocos2dxActivity implements SDKCtrlDelegate{
 ### 接下来实现生命周期的函数，这里只举2个函数，其他的onPause之类的类比
 
 
-```
+```java
 	  @Override
 	  protected void onDestroy() {
 	 		super.onDestroy();
@@ -120,7 +120,7 @@ public class TestActivity extends Cocos2dxActivity implements SDKCtrlDelegate{
 
 ### 接下来就是比较重要的发起支付了
 
-```
+```java
 		void  pay(int payIndex)
 	 	{
 	 		//payIndx 就是 getConfig函数里的key ，这里的1对应的就是 “商品1 " 计费ID是"15735"
