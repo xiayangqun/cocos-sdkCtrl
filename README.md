@@ -33,7 +33,7 @@
 需要调用者继承这个delegate，并实现购买结束时候的回调
 
 ### **src/PluginXXX.java**
-各种渠道支付插件的具体实现。请注意本例子已经提供了一些渠道支付写好的插件，但是接入渠道支付时候的**AndroidManifest.xml**的修改，以及手动拷贝渠道支付需要的**jar包**还是需要自己做的
+各种渠道支付插件的具体实现。请注意本例子已经提供了一些渠道支付写好的插件，但是接入渠道支付时候的**AndroidManifest.xml**的修改，以及手动拷贝渠道支付需要的**jar包**还是需要自己做的。有可能我上传的版本**会落后**于渠道的新版本哦，请小心
 
 **每个支付渠道都会有自己的appID ,appKey之类的东西，使用相应的插件之前，请修改源码里对应的appid之类的东西。**
 
@@ -112,9 +112,8 @@ public class TestActivity extends Cocos2dxActivity implements SDKCtrlDelegate{
 	 
 	@Override
 	 protected void onRestart() {
-	
 	 		super.onRestart();
-	 		SDKCtrl.onRestart("Baidu);
+	 		SDKCtrl.onRestart("Baidu");
 	 }
 ```
 
@@ -128,7 +127,7 @@ public class TestActivity extends Cocos2dxActivity implements SDKCtrlDelegate{
 	 	}
 ```
 
-### 其他见SDKCtrl.java的源码
+### 其他功能，比如退出游戏，显示广告，等等的详见**SDKCtrl.java**的源码
 
 
 ## 4. 注意（重要的事情说三遍）
