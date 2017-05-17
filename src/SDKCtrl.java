@@ -240,7 +240,7 @@ public class SDKCtrl
 		if (sdkName == null || sdkName.equals(""))
 		{
 			// 按照优先级来
-			if (SDKCtrl.channelName.equals("") != false)
+			if (SDKCtrl.channelName.equals("") == false)
 			{
 				SDKAbstract sdk = sdksMap.get(channelName);
 				if (sdk != null) { return sdk.showMoreGame(); }
@@ -266,7 +266,7 @@ public class SDKCtrl
 		if (sdkName == null || sdkName.equals(""))
 		{
 			// 按照优先级来
-			if (SDKCtrl.channelName.equals("") != false)
+			if (SDKCtrl.channelName.equals("") == false)
 			{
 				SDKAbstract sdk = sdksMap.get(channelName);
 				if (sdk != null) { return sdk.showExitGame(); }
@@ -290,7 +290,7 @@ public class SDKCtrl
 	{
 		if (sdkName == null || sdkName.equals(""))
 		{
-			if (SDKCtrl.channelName.equals("") != false)
+			if (SDKCtrl.channelName.equals("") == false)
 			{
 				SDKAbstract sdk = sdksMap.get(channelName);
 				if (sdk != null && sdk.showInterstitialAd()) { return; }
@@ -315,7 +315,7 @@ public class SDKCtrl
 	{
 		if (sdkName == null || sdkName.equals(""))
 		{
-			if (SDKCtrl.channelName.equals("") != false)
+			if (SDKCtrl.channelName.equals("") == false)
 			{
 				SDKAbstract sdk = sdksMap.get(channelName);
 				if (sdk != null && sdk.showBannerAd()) { return; }
@@ -340,7 +340,7 @@ public class SDKCtrl
 	{
 		if (sdkName == null || sdkName.equals(""))
 		{
-			if (SDKCtrl.channelName.equals("") != false)
+			if (SDKCtrl.channelName.equals("") == false)
 			{
 				SDKAbstract sdk = sdksMap.get(channelName);
 				if (sdk != null && sdk.hideBannerAd()) { return; }
