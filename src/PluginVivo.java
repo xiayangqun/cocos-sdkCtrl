@@ -14,9 +14,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.bbk.payment.network.NetworkRequestAgent;
-import com.bbk.payment.payment.OnVivoSinglePayResultListener;
-import com.bbk.payment.util.Constants;
+
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,18 +39,23 @@ import java.util.UUID;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import com.vivo.sdkplugin.aidl.VivoUnionManager;
+
+import com.vivo.unionsdk.open.VivoExitCallback;
+import com.vivo.unionsdk.open.VivoUnionSDK;
+import com.catcap.IAP.PluginVIvoUtil.NetworkRequestAgent;
+import com.vivo.unionsdk.open.*;
+
 import org.json.JSONObject;
 
 public class PluginVivo extends SDKAbstract implements DialogInterface.OnClickListener
 {
 	// 在这里修改你从Vivo后台得到的参数
-	static private String STORDID = "你的stordID";
-	static private String APPID = "你的appid";
-	static private String APPKEY = "你的appkey";
+	static private String STORDID = "你的CPID";
+	static private String APPID = "你的APPID";
+	static private String APPKEY = "你的APPKEY";
 	
-	private VivoUnionManager mVivoUnionManager;
-	private OnVivoSinglePayResultListener payResultListener;
+
+	private VivoPayCallback payResultListener;
 	private boolean isSupportWeiXin;
 	AlertDialog.Builder whichDialog;
 	static private PluginVivo Instance = null;
@@ -63,22 +66,19 @@ public class PluginVivo extends SDKAbstract implements DialogInterface.OnClickLi
 		Instance = this;
 		this.sdkConfig = _sdkConfig;
 		
-		payResultListener = new OnVivoSinglePayResultListener()
+		payResultListener = new VivoPayCallback()
 		{
+
 			@Override
-			public void payResult(String transNo, boolean result, String resultMsg, String payMsg)
+			public void onVivoPayResult(String tranNo, boolean isSucc, String errCode)
 			{
-				String showMsg =  payMsg;
-				if (result)
-					SDKAbstract.finishPurchase(true, showMsg);
-				else
-					SDKAbstract.finishPurchase(false, showMsg);
-			};
+				SDKAbstract.finishPurchase(isSucc, errCode);
+			}
+			
 		};
 		
-		mVivoUnionManager = new VivoUnionManager(SDKCtrl.cocosActivity);
-		mVivoUnionManager.initVivoSinglePayment(SDKCtrl.cocosActivity, payResultListener);
-		mVivoUnionManager.singlePaymentInit(SDKCtrl.cocosActivity);
+		//这个init需要在Application里的 onCreate里进行哦进行
+		  VivoUnionSDK.initSdk(SDKCtrl.mainApplication, APPID, true);	
 	}
 	
 	@Override
@@ -132,7 +132,21 @@ public class PluginVivo extends SDKAbstract implements DialogInterface.OnClickLi
 	@Override
 	public boolean showExitGame()
 	{
-		// TODO Auto-generated method stub
+		VivoUnionSDK.exit(SDKCtrl.cocosActivity	, new VivoExitCallback(){
+
+			@Override
+			public void onExitCancel()
+			{
+				
+			}
+
+			@Override
+			public void onExitConfirm()
+			{
+				SDKCtrl.showExitGame("Mobile");
+			}
+
+		});
 		return false;
 	}
 	
@@ -158,10 +172,10 @@ public class PluginVivo extends SDKAbstract implements DialogInterface.OnClickLi
 	}
 	
 	@Override
-	public void onDestroy()
+	public void onDestory()
 	{
-		mVivoUnionManager.singlePaymentExit(SDKCtrl.cocosActivity);
-		mVivoUnionManager.cancelVivoSinglePayment(payResultListener);
+//		VivoUnionSDK.
+//		mVivoUnionManager.cancelVivoSinglePayment(payResultListener);
 	}
 	
 	private NameValuePair[] doPaymentInit(int payIndex)
@@ -394,9 +408,18 @@ public class PluginVivo extends SDKAbstract implements DialogInterface.OnClickLi
 		@Override
 		protected String doInBackground(NameValuePair... nameValuePairs)
 		{
-			NetworkRequestAgent networkRequestAgent = new NetworkRequestAgent(SDKCtrl.cocosActivity);
-			String result = networkRequestAgent.sendRequest("https://pay.vivo.com.cn/vivoPay/getVivoOrderNum",
-					nameValuePairs);
+			NetworkRequestAgent networkRequestAgent = new NetworkRequestAgent();
+			String result =null;
+			try
+			{
+				result = networkRequestAgent.sendRequest("https://pay.vivo.com.cn/vivoPay/getVivoOrderNum",
+						nameValuePairs);
+			}
+			catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			Log.d("doInBackground", result);
 			return result;
 		}
@@ -431,29 +454,38 @@ public class PluginVivo extends SDKAbstract implements DialogInterface.OnClickLi
 						String transNo = jsonVo.getString("vivoOrder");
 						String signature = jsonVo.getString("vivoSignature");
 						
-						Bundle localBundle = new Bundle();
-						localBundle.putString("transNo", transNo);
-						localBundle.putString("signature", signature);
-						 localBundle.putString("package",SDKCtrl.cocosActivity.getPackageName());
-						localBundle.putBoolean("useWeixinPay", false);
-						localBundle.putString("useMode", "00");
-						localBundle.putString("productName", PluginVivo.Instance.getPayDes(SDKAbstract.payIndex));
-						localBundle.putString("productDes", PluginVivo.Instance.getPayDes(SDKAbstract.payIndex));
+//						Bundle localBundle = new Bundle();
+//						localBundle.putString("transNo", transNo);
+//						localBundle.putString("signature", signature);
+//						 localBundle.putString("package",SDKCtrl.cocosActivity.getPackageName());
+//						localBundle.putBoolean("useWeixinPay", false);
+//						localBundle.putString("useMode", "00");
+//						localBundle.putString("productName", PluginVivo.Instance.getPayDes(SDKAbstract.payIndex));
+//						localBundle.putString("productDes", PluginVivo.Instance.getPayDes(SDKAbstract.payIndex));
 						
 						DecimalFormat format_d = new DecimalFormat("#.##");
 						String prize = "" + PluginVivo.Instance.getPriceValue(SDKAbstract.payIndex) + ".00";
-						Double price = format_d.parse(prize).doubleValue();
-						localBundle.putDouble("price", price);
-						localBundle.putString("userId", "aiyangcheng3User");
+						//Double price = format_d.parse(prize).doubleValue();
+//						localBundle.putDouble("price", PluginVivo.Instance.getPayDes(SDKAbstract.payIndex));
+//						localBundle.putString("userId", "aiyangcheng3User");
+						
+						VivoPayInfo  vivoPayInfo = new VivoPayInfo(
+								PluginVivo.Instance.getPayDes(SDKAbstract.payIndex), //商品名称
+								PluginVivo.Instance.getPayDes(SDKAbstract.payIndex),	//商品描述
+								prize,  //商品价格
+								signature, //Vivo的签名
+								PluginVivo.APPID, //应用ID
+								transNo ,//订单ID
+								null
+								);
 						
 						if (PluginVivo.Instance.isSupportWeiXin)
 						{
-							localBundle.putInt("mPaymentType", 1);
-							PluginVivo.Instance.mVivoUnionManager.singlePaymentDirectly(SDKCtrl.cocosActivity,localBundle);
+							VivoUnionSDK.payNow(SDKCtrl.cocosActivity, vivoPayInfo,PluginVivo.Instance.payResultListener, VivoConstants.SINGLE_FRONT_PAY_WEIXIN);
 						}
 						else
 						{
-							PluginVivo.Instance.mVivoUnionManager.singlePayment(SDKCtrl.cocosActivity, localBundle);
+							VivoUnionSDK.pay(SDKCtrl.cocosActivity, vivoPayInfo, PluginVivo.Instance.payResultListener);
 						}
 						
 					}
