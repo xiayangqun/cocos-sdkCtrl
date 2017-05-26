@@ -97,6 +97,8 @@ public class PluginUC extends SDKAbstract
 			{
 				if (response.getType() == Response.LISTENER_TYPE_PAY)
 				{
+
+					response.setMessage(Response.OPERATE_SUCCESS_MSG); 
 					try
 					{
 						String dataStr = response.getData();
